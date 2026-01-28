@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="INOVIT - System ewidencji czasu pracy z funkcjami statystyk, kategorii i eksportu danych">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="INOVIT">
+    <title>INOVIT - Ewidencja Czasu Pracy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Ekran splash (animacja startowa) -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-container">
+            <div class="splash-logo">
+                <div class="splash-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="splash-title">INOVIT</h1>
+            <p class="splash-subtitle">Ewidencja Czasu Pracy</p>
+            <div class="splash-loader">
+                <div class="splash-progress">
+                    <div class="splash-progress-bar"></div>
+                </div>
+                <span class="splash-loading-text">Ładowanie...</span>
+            </div>
+        </div>
+        <p class="splash-copyright">© INOVIT</p>
+    </div>
+
+    <!-- Ekran powitalny -->
+    <div id="welcome-screen" class="screen">
+        <div class="welcome-container">
+            <div class="logo-container">
+                <div class="logo-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="welcome-title">INOVIT</h1>
+            <p class="welcome-subtitle">System Ewidencji Czasu Pracy</p>
+
+            <!-- Category selector on welcome -->
+            <div class="welcome-category">
+                <label for="work-category">Kategoria:</label>
+                <select id="work-category" class="form-select">
+                    <option value="default">Ogólne</option>
+                </select>
+            </div>
+
+            <button id="start-work-btn" class="btn btn-success btn-large">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5,3 19,12 5,21"/>
+                </svg>
+                <span>Rozpocznij pracę</span>
+            </button>
+
+            <div class="welcome-nav-buttons">
+                <button id="show-history-btn" class="btn btn-secondary btn-history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 8v4l3 3"/>
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span>Historia</span>
+                </button>
+                <button id="show-stats-btn" class="btn btn-secondary btn-history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6"/>
+                    </svg>
+                    <span>Statystyki</span>
+                </button>
+                <button id="settings-btn" class="btn btn-secondary btn-history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                    </svg>
+                    <span>Ustawienia</span>
+                </button>
+            </div>
+
+            <p class="welcome-date" id="welcome-date"></p>
+            <p class="welcome-copyright">© INOVIT</p>
+        </div>
+    </div>
+
+    <!-- Ekran timera (podczas pracy) -->
+    <div id="timer-screen" class="screen">
+        <header class="header">
+            <div class="header-content">
+                <button id="back-from-timer-btn" class="btn-back" title="Menu główne">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </button>
+                <h1 class="app-title">INOVIT</h1>
+                <p class="current-date" id="current-date"></p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Info o rozpoczęciu -->
+            <div class="work-info">
+                <p>Praca rozpoczęta o <strong id="work-start-display">--:--</strong></p>
+            </div>
+
+            <!-- Zegar -->
+            <div class="timer-section">
+                <div class="timer-display">
+                    <span id="hours">00</span>
+                    <span class="timer-separator">:</span>
+                    <span id="minutes">00</span>
+                    <span class="timer-separator">:</span>
+                    <span id="seconds">00</span>
+                </div>
+                <p class="timer-label" id="timer-label">Czas pracy</p>
+            </div>
+
+            <!-- Status -->
+            <div class="status-section">
+                <div class="status-indicator" id="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="status-text">W pracy</span>
+                </div>
+            </div>
+
+            <!-- Przyciski przerwy -->
+            <div class="break-controls">
+                <h3 class="section-title">Przerwa</h3>
+                <div class="break-buttons">
+                    <button id="start-break-btn" class="btn btn-warning">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16"/>
+                            <rect x="14" y="4" width="4" height="16"/>
+                        </svg>
+                        <span>Rozpocznij przerwę</span>
+                    </button>
+                    <button id="end-break-btn" class="btn btn-info" disabled>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5,3 19,12 5,21"/>
+                        </svg>
+                        <span>Zakończ przerwę</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Aktualny czas przerwy -->
+            <div class="break-timer-section" id="break-timer-section" style="display: none;">
+                <p class="break-timer-label">Czas przerwy:</p>
+                <div class="break-timer-display">
+                    <span id="break-hours">00</span>:<span id="break-minutes">00</span>:<span id="break-seconds">00</span>
+                </div>
+            </div>
+
+            <!-- Lista przerw -->
+            <div class="breaks-list" id="breaks-list" style="display: none;">
+                <h3 class="section-title">Dzisiejsze przerwy</h3>
+                <div id="breaks-container"></div>
+            </div>
+
+            <!-- Notatka -->
+            <div class="note-section">
+                <h3 class="section-title">Notatka</h3>
+                <textarea id="work-note" class="form-textarea" placeholder="Dodaj notatkę do tego dnia pracy..." rows="3"></textarea>
+            </div>
+
+            <!-- Przycisk zakończenia -->
+            <div class="end-work-section">
+                <button id="end-work-btn" class="btn btn-danger btn-xl">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                    </svg>
+                    <span>Zakończ pracę</span>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Ekran podsumowania -->
+    <div id="summary-screen" class="screen">
+        <div class="summary-container">
+            <div class="summary-header">
+                <div class="summary-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <h2>Podsumowanie dnia</h2>
+                <p class="summary-date" id="summary-date"></p>
+            </div>
+
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="card-icon start">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-label">Początek pracy</p>
+                        <p class="card-value" id="summary-start-time">--:--</p>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="card-icon end">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 8,14"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-label">Koniec pracy</p>
+                        <p class="card-value" id="summary-end-time">--:--</p>
+                    </div>
+                </div>
+
+                <div class="summary-card highlight">
+                    <div class="card-icon total">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-label">Przepracowane godziny</p>
+                        <p class="card-value large" id="summary-total-time">0h 0m</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-breaks" id="summary-breaks">
+                <h3>Przerwy</h3>
+                <div id="summary-breaks-list"></div>
+                <div class="total-break-time">
+                    <span>Łączny czas przerw:</span>
+                    <strong id="summary-total-break">0h 0m</strong>
+                </div>
+            </div>
+
+            <div class="summary-actions">
+                <button id="new-day-btn" class="btn btn-primary btn-large">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    <span>Nowy dzień pracy</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ekran historii -->
+    <div id="history-screen" class="screen">
+        <header class="header">
+            <div class="header-content">
+                <button id="back-from-history-btn" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1 class="app-title">Historia</h1>
+                <div></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Panel selekcji i eksportu -->
+            <div class="export-panel" id="export-panel">
+                <div class="export-panel-left">
+                    <label class="checkbox-container select-all-container">
+                        <input type="checkbox" id="select-all-checkbox">
+                        <span class="checkmark"></span>
+                        <span class="checkbox-label">Zaznacz wszystkie</span>
+                    </label>
+                    <span class="selected-count" id="selected-count">Wybrano: 0</span>
+                </div>
+                <div class="export-panel-right">
+                    <button id="export-excel-btn" class="btn btn-success btn-export" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="12" y1="18" x2="12" y2="12"/>
+                            <line x1="9" y1="15" x2="12" y2="18"/>
+                            <line x1="15" y1="15" x2="12" y2="18"/>
+                        </svg>
+                        Excel
+                    </button>
+                    <button id="export-json-btn" class="btn btn-info btn-export">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Eksport JSON
+                    </button>
+                    <label class="btn btn-warning btn-export btn-import-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        Import JSON
+                        <input type="file" id="import-json-input" accept=".json" hidden>
+                    </label>
+                </div>
+            </div>
+
+            <div class="history-list" id="history-list">
+                <p class="empty-history" id="empty-history">Brak zapisanych dni pracy</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Ekran statystyk -->
+    <div id="stats-screen" class="screen">
+        <header class="header">
+            <div class="header-content">
+                <button id="back-from-stats-btn" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1 class="app-title">Statystyki</h1>
+                <div></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Period selector -->
+            <div class="stats-period-selector">
+                <button class="period-btn" data-period="week">Tydzień</button>
+                <button class="period-btn active" data-period="month">Miesiąc</button>
+                <button class="period-btn" data-period="year">Rok</button>
+                <button class="period-btn" data-period="all">Wszystko</button>
+            </div>
+
+            <!-- Category selector -->
+            <div class="stats-category-selector">
+                <label for="stats-category">Kategoria:</label>
+                <select id="stats-category" class="form-select">
+                    <option value="all">Wszystkie kategorie</option>
+                </select>
+            </div>
+
+            <!-- Stats cards -->
+            <div class="stats-cards">
+                <div class="stats-card">
+                    <div class="stats-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="stats-card-content">
+                        <span class="stats-card-value" id="stats-days-worked">0</span>
+                        <span class="stats-card-label">Dni pracy</span>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="stats-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <div class="stats-card-content">
+                        <span class="stats-card-value" id="stats-total-work">0h</span>
+                        <span class="stats-card-label">Łączny czas</span>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="stats-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 20V10M12 20V4M6 20v-6"/>
+                        </svg>
+                    </div>
+                    <div class="stats-card-content">
+                        <span class="stats-card-value" id="stats-avg-work">0h</span>
+                        <span class="stats-card-label">Średnia/dzień</span>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="stats-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="6" y="4" width="4" height="16"/>
+                            <rect x="14" y="4" width="4" height="16"/>
+                        </svg>
+                    </div>
+                    <div class="stats-card-content">
+                        <span class="stats-card-value" id="stats-total-break">0h</span>
+                        <span class="stats-card-label">Przerwy</span>
+                    </div>
+                </div>
+
+                <div class="stats-card stats-card-wide" id="stats-overtime-card">
+                    <div class="stats-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                    </div>
+                    <div class="stats-card-content">
+                        <span class="stats-card-value" id="stats-overtime">0h</span>
+                        <span class="stats-card-label">Bilans godzin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="stats-chart-section">
+                <h3 class="section-title">Wykres czasu pracy</h3>
+                <div id="stats-chart" class="stats-chart"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal edycji -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edytuj wpis</h2>
+                <button id="close-modal-btn" class="btn-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Data pracy</label>
+                    <input type="date" id="edit-date" class="form-input">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rozpoczęcie pracy</label>
+                        <input type="time" id="edit-start-time" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Zakończenie pracy</label>
+                        <input type="time" id="edit-end-time" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Kategoria</label>
+                    <select id="edit-category" class="form-input">
+                        <option value="default">Ogólne</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Notatka</label>
+                    <textarea id="edit-note" class="form-textarea" rows="3" placeholder="Dodaj notatkę..."></textarea>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <label>Przerwy</label>
+                        <button id="add-break-btn" class="btn btn-small btn-secondary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            Dodaj przerwę
+                        </button>
+                    </div>
+                    <div id="edit-breaks-list" class="edit-breaks-list">
+                        <!-- Przerwy będą dodawane dynamicznie -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-edit-btn" class="btn btn-secondary">Anuluj</button>
+                <button id="save-edit-btn" class="btn btn-primary">Zapisz zmiany</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ustawień -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ustawienia</h2>
+                <button id="close-settings-btn" class="btn-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Norma czasowa</h3>
+                    <div class="form-group">
+                        <label>Dzienna norma pracy (godziny)</label>
+                        <input type="number" id="settings-daily-norm" class="form-input" min="1" max="24" step="0.5" value="8">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Przypomnienia</h3>
+                    <div class="form-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="settings-break-reminder-enabled" checked>
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Włącz przypomnienia o przerwach</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Przypominaj co (minuty)</label>
+                        <input type="number" id="settings-break-reminder" class="form-input" min="30" max="480" step="15" value="120">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Kategorie</h3>
+                    <div id="categories-list" class="categories-list"></div>
+                    <button id="add-category-btn" class="btn btn-secondary btn-small" style="margin-top: 0.5rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Dodaj kategorię
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-settings-btn" class="btn btn-primary">Zapisz ustawienia</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
