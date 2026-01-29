@@ -1,8 +1,17 @@
 // ===== STORAGE KEYS =====
-const STORAGE_KEY = 'elmar_work_session';
-const HISTORY_KEY = 'elmar_work_history';
-const SETTINGS_KEY = 'elmar_settings';
-const CATEGORIES_KEY = 'elmar_categories';
+const STORAGE_KEY = 'inovit_work_session';
+const HISTORY_KEY = 'inovit_work_history';
+const SETTINGS_KEY = 'inovit_settings';
+const CATEGORIES_KEY = 'inovit_categories';
+
+// ===== SECURITY: HTML ESCAPE FUNCTION =====
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    const str = String(text);
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
 
 // ===== DEFAULT SETTINGS =====
 const DEFAULT_SETTINGS = {
@@ -261,18 +270,18 @@ function deleteCategory(id) {
 function renderCategoriesSelect(selectElement, selectedId = 'default') {
     if (!selectElement) return;
     selectElement.innerHTML = categories.map(c =>
-        `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.name}</option>`
+        `<option value="${escapeHtml(c.id)}" ${c.id === selectedId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
     ).join('');
 }
 
 function renderCategoriesList() {
     if (!elements.categoriesList) return;
     elements.categoriesList.innerHTML = categories.map(c => `
-        <div class="category-item" data-id="${c.id}">
-            <div class="category-color" style="background: ${c.color}"></div>
-            <span class="category-name">${c.name}</span>
+        <div class="category-item" data-id="${escapeHtml(c.id)}">
+            <div class="category-color" style="background: ${escapeHtml(c.color)}"></div>
+            <span class="category-name">${escapeHtml(c.name)}</span>
             ${c.id !== 'default' ? `
-                <button class="delete-category-btn" data-id="${c.id}">
+                <button class="delete-category-btn" data-id="${escapeHtml(c.id)}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                         <path d="M18 6L6 18M6 6l12 12"/>
                     </svg>
@@ -309,7 +318,7 @@ function exportDatabaseJSON() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `elmar_backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `inovit_backup_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -542,13 +551,13 @@ function renderStatsChart(dailyData, showAllCategories = false, categoryBreakdow
         const hours = (d.workMs / (1000 * 60 * 60)).toFixed(1);
         const isOverNorm = d.workMs > normMs;
 
-        // Use category color when showing all categories
-        const barColor = showAllCategories ? d.categoryColor : '';
+        // Use category color when showing all categories (escape for security)
+        const barColor = showAllCategories ? escapeHtml(d.categoryColor) : '';
         const barStyle = barColor ? `background: ${barColor};` : '';
 
         return `
             <div class="chart-bar-container">
-                <div class="chart-bar ${isOverNorm && !showAllCategories ? 'over-norm' : ''}" style="height: ${heightPercent}%; ${barStyle}" title="${d.categoryName}">
+                <div class="chart-bar ${isOverNorm && !showAllCategories ? 'over-norm' : ''}" style="height: ${heightPercent}%; ${barStyle}" title="${escapeHtml(d.categoryName)}">
                     <span class="chart-bar-value">${hours}h</span>
                 </div>
                 <div class="chart-norm-line" style="bottom: ${normPercent}%"></div>
@@ -560,11 +569,11 @@ function renderStatsChart(dailyData, showAllCategories = false, categoryBreakdow
     // Build legend based on view mode
     let legendHtml = '';
     if (showAllCategories && Object.keys(categoryBreakdown).length > 0) {
-        // Show category legend with totals
+        // Show category legend with totals (escape for security)
         const categoryLegendItems = Object.values(categoryBreakdown).map(cat => `
             <span class="legend-item">
-                <span class="legend-color" style="background: ${cat.color}"></span>
-                ${cat.name} (${formatDurationReadable(cat.totalMs)})
+                <span class="legend-color" style="background: ${escapeHtml(cat.color)}"></span>
+                ${escapeHtml(cat.name)} (${formatDurationReadable(cat.totalMs)})
             </span>
         `).join('');
 
@@ -790,11 +799,12 @@ function renderHistory() {
 
         const isChecked = selectionState.selectedIndices.has(index);
 
-        // Category badge
-        const categoryColor = entry.categoryColor || '#6366f1';
-        const categoryName = entry.categoryName || 'Ogólne';
+        // Category badge (escape for security)
+        const categoryColor = escapeHtml(entry.categoryColor || '#6366f1');
+        const categoryName = escapeHtml(entry.categoryName || 'Ogólne');
 
-        // Note preview
+        // Note preview (escape for XSS protection)
+        const safeNote = escapeHtml(entry.note || '');
         const notePreview = entry.note ? `
             <div class="history-item-note">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
@@ -803,7 +813,7 @@ function renderHistory() {
                     <line x1="16" y1="13" x2="8" y2="13"/>
                     <line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
-                ${entry.note.length > 50 ? entry.note.substring(0, 50) + '...' : entry.note}
+                ${safeNote.length > 50 ? safeNote.substring(0, 50) + '...' : safeNote}
             </div>
         ` : '';
 
@@ -949,7 +959,7 @@ function exportToExcel() {
     let csvContent = BOM;
 
     // Title
-    csvContent += 'EWIDENCJA CZASU PRACY - ELMAR\n';
+    csvContent += 'EWIDENCJA CZASU PRACY - INOVIT\n';
     csvContent += `Data eksportu: ${new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}\n`;
     csvContent += '\n';
 
@@ -982,7 +992,7 @@ function exportToExcel() {
     const url = URL.createObjectURL(blob);
 
     const today = new Date();
-    const fileName = `Ewidencja_Elmar_${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}.csv`;
+    const fileName = `Ewidencja_INOVIT_${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}.csv`;
 
     link.setAttribute('href', url);
     link.setAttribute('download', fileName);
