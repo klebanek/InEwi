@@ -1,22 +1,22 @@
-// INOVIT Service Worker v3.0
-const CACHE_NAME = 'inovit-cache-v3';
-const OFFLINE_URL = '/';
+// INOVIT Service Worker v4.0
+const CACHE_NAME = 'inovit-cache-v4';
+const OFFLINE_URL = '/inewi/';
 
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/app.js',
-    '/style.css',
-    '/manifest.json',
-    '/icon-72.png',
-    '/icon-96.png',
-    '/icon-128.png',
-    '/icon-144.png',
-    '/icon-152.png',
-    '/icon-180.png',
-    '/icon-192.png',
-    '/icon-384.png',
-    '/icon-512.png',
+    '/inewi/',
+    '/inewi/index.html',
+    '/inewi/app.js',
+    '/inewi/style.css',
+    '/inewi/manifest.json',
+    '/inewi/icon-72.png',
+    '/inewi/icon-96.png',
+    '/inewi/icon-128.png',
+    '/inewi/icon-144.png',
+    '/inewi/icon-152.png',
+    '/inewi/icon-180.png',
+    '/inewi/icon-192.png',
+    '/inewi/icon-384.png',
+    '/inewi/icon-512.png',
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
 ];
 
@@ -126,12 +126,12 @@ self.addEventListener('notificationclick', event => {
     if (event.action === 'break') {
         // Open app and start break
         event.waitUntil(
-            clients.openWindow('/?action=break')
+            clients.openWindow('/inewi/?action=break')
         );
     } else {
         // Just open the app
         event.waitUntil(
-            clients.openWindow('/')
+            clients.openWindow('/inewi/')
         );
     }
 });
